@@ -3,18 +3,21 @@
     <h1>Kwetter</h1>
     <MessageInput ref='messageInput' v-model="newMessage" :maxLength="maxLength" />
     <button :disabled="!canPostMessage">Verstuur</button>
+    <MessageFeedback :value="newMessage" :maxLength="maxLength" />
   </div>
 </template>
 
 <script>
 
 import MessageInput from './components/MessageInput.vue';
+import MessageFeedback from './components/MessageFeedback.vue';
 
 export default {
 
   // Components die we gebruiken
   components: {
-    MessageInput
+    MessageInput,
+    MessageFeedback
   },
 
   // Top-level app state
