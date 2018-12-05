@@ -4,6 +4,7 @@
     <MessageInput ref='messageInput' v-model="newMessage" :maxLength="maxLength" />
     <button :disabled="!canPostMessage">Verstuur</button>
     <MessageFeedback :value="newMessage" :maxLength="maxLength" />
+    <MessageList :messages="messages" />
   </div>
 </template>
 
@@ -11,13 +12,15 @@
 
 import MessageInput from './components/MessageInput.vue';
 import MessageFeedback from './components/MessageFeedback.vue';
+import MessageList from './components/MessageList.vue';
 
 export default {
 
   // Components die we gebruiken
   components: {
     MessageInput,
-    MessageFeedback
+    MessageFeedback,
+    MessageList
   },
 
   // Top-level app state
@@ -26,6 +29,9 @@ export default {
 
       // Maximale lengte van een bericht
       maxLength: 40,
+
+      // Berichten tot nu toe
+      messages: ['aap', 'noot', 'mies'],
 
       // Het nieuwe bericht dat bewerkt wordt
       newMessage: ""
