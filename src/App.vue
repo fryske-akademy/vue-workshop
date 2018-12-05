@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <h1>Kwetter</h1>
-    <MessageInput ref='messageInput' v-model="newMessage" :maxLength="maxLength" />
+    <MessageInput ref='messageInput' v-model="newMessage" @post-message="postMessage($event)" :maxLength="maxLength" />
     <button @click="postMessage" :disabled="!canPostMessage">Verstuur</button>
     <MessageFeedback :value="newMessage" :maxLength="maxLength" />
     <MessageList :messages="messages" />
@@ -34,14 +34,17 @@ export default {
       messages: [],
 
       // Het nieuwe bericht dat bewerkt wordt
-      newMessage: ""
+      newMessage: {
+        message: "",
+        user: ""
+      }
     };
   },
 
   computed: {
     // Kan het bericht geplaatst worden, of niet? (leeg, te lang of geen naam gegeven)
     canPostMessage: function () {
-      return this.newMessage.length > 0 && this.newMessage.length <= this.maxLength;
+      return this.newMessage.user.length > 0 && this.newMessage.message.length > 0 && this.newMessage.message.length <= this.maxLength;
     }
   },
 
@@ -50,8 +53,13 @@ export default {
 
     // Post new message
     postMessage: function() {
-      this.messages.push(this.newMessage);
-      this.newMessage = '';
+      this.messages.push({
+        message: this.newMessage.message,
+        user: this.newMessage.user,
+        time: (new Date()).getTime()
+      });
+      this.newMessage.message = '';
+      this.$refs.messageInput.focus();
     }
 
   }

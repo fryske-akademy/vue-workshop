@@ -1,13 +1,27 @@
 <template>
   <div>
+    <p class='username'>
+      <input
+        ref="fieldUserName"
+
+        type='text' 
+        placeholder="Wie ben je?"
+        :class="{ invalid: value.user.length === 0 }" 
+
+        :value="value.user" 
+        @input="valueChanged" />
+    </p>
     <textarea 
       ref="myTextArea"
 
       placeholder="Wat is er aan de hand?" 
       autofocus
-      :class="{ invalid: value.length > maxLength }" 
+      :class="{ invalid: value.message.length > maxLength }" 
 
-      :value="value"
+      @keydown.enter.exact.prevent
+      @keyup.enter.exact="$emit('post-message')"
+
+      :value="value.message"
       @input="valueChanged" 
       ></textarea>
   </div>
@@ -19,7 +33,7 @@ export default {
   // Waardes die dit component ontvangt van de parent.
   // Niet wijzigen in dit component!
   props: {
-    value: String,            // nodig om dit component met v-model te laten werken
+    value: Object,            // nodig om dit component met v-model te laten werken
     maxLength: Number,
     placeholderText: String
   },
@@ -30,7 +44,15 @@ export default {
     // Wordt aangeroepen als de waarde van user of message verandert
     // Genereert een input event zodat dit component met v-model werkt
     valueChanged: function () {
-      this.$emit('input', this.$refs.myTextArea.value);
+      this.$emit('input', {
+        user: this.$refs.fieldUserName.value,
+        message: this.$refs.myTextArea.value
+      });
+    },
+
+    // Zet de focus op het berichtenveld
+    focus: function () {
+      this.$refs.myTextArea.focus();
     }
 
   }
