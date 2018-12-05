@@ -2,7 +2,7 @@
   <div id="app">
     <h1>Kwetter</h1>
     <MessageInput ref='messageInput' v-model="newMessage" :maxLength="maxLength" />
-    <button :disabled="!canPostMessage">Verstuur</button>
+    <button @click="postMessage" :disabled="!canPostMessage">Verstuur</button>
     <MessageFeedback :value="newMessage" :maxLength="maxLength" />
     <MessageList :messages="messages" />
   </div>
@@ -31,7 +31,7 @@ export default {
       maxLength: 40,
 
       // Berichten tot nu toe
-      messages: ['aap', 'noot', 'mies'],
+      messages: [],
 
       // Het nieuwe bericht dat bewerkt wordt
       newMessage: ""
@@ -43,6 +43,17 @@ export default {
     canPostMessage: function () {
       return this.newMessage.length > 0 && this.newMessage.length <= this.maxLength;
     }
+  },
+
+  // Methods die je in bijv. event handlers kunt aanroepen
+  methods: {
+
+    // Post new message
+    postMessage: function() {
+      this.messages.push(this.newMessage);
+      this.newMessage = '';
+    }
+
   }
 
 }
