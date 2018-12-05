@@ -10,9 +10,12 @@
 
 <script>
 
+import Vue from 'vue';
 import MessageInput from './components/MessageInput.vue';
 import MessageFeedback from './components/MessageFeedback.vue';
 import MessageList from './components/MessageList.vue';
+
+const BACKEND_URL = "https://gwtp.net/jn/kwetter.php";
 
 export default {
 
@@ -48,15 +51,25 @@ export default {
     }
   },
 
+  // Wordt aangeroepen als de app voor het eerst start
+  mounted: function () {
+    // Get messages from backend
+    Vue.axios.get(BACKEND_URL).then((response) => {
+      this.messages = response.data;
+    });
+  },
+
   // Methods die je in bijv. event handlers kunt aanroepen
   methods: {
 
     // Post new message
     postMessage: function() {
-      this.messages.push({
-        message: this.newMessage.message,
-        user: this.newMessage.user,
-        time: (new Date()).getTime()
+      let params = new URLSearchParams();
+      params.append('message', this.newMessage.message );
+      params.append('user', this.newMessage.user );
+      params.append('time', (new Date()).getTime() );
+      Vue.axios.post(BACKEND_URL, params).then((response) => {
+        this.messages = response.data;
       });
       this.newMessage.message = '';
       this.$refs.messageInput.focus();
