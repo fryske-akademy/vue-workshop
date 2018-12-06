@@ -14,6 +14,8 @@ Het is handig om voor de workshop alvast de volgende software op je laptop te in
   Web development IDE
 * **Vue devtools browser plugin**<br>
   Debugger voor Vue applicaties
+* **Testproject**
+  Clone het project van GitHub, installeer libraries en start devserver.
 
 Hieronder staan gedetailleerde instructies.
 
@@ -88,3 +90,25 @@ Deze plugin maakt het heel eenvoudig en prettig om Vue-applicaties te debuggen.
 
 - [Firefox](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
 - [Chrome](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
+
+### Testproject opzetten
+
+Clone het project van GitHub, via bijv. TortoiseGit of via de commandline:
+
+```
+git clone https://github.com/INL/vue-workshop
+```
+
+Installeer de benodigde libraries:
+
+```
+npm install
+```
+
+Start de development server:
+
+```
+npm run serve
+```
+
+Je kunt het project nu testen en debuggen op http://localhost:8080/ .
