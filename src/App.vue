@@ -54,16 +54,22 @@ export default {
     }
   },
 
-  // Wordt aangeroepen als de app voor het eerst start
   mounted: function () {
-    // Get messages from backend
-    Vue.axios.get(BACKEND_URL).then((response) => {
-      this.messages = response.data;
-    });
+    this.loadData();
+    setInterval(function () {
+      this.loadData();
+    }.bind(this), 5000); 
   },
 
   // Methods die je in bijv. event handlers kunt aanroepen
   methods: {
+
+    loadData: function () {
+      // Get messages from backend
+      Vue.axios.get(BACKEND_URL).then((response) => {
+        this.messages = response.data;
+      });
+    },
 
     // Post new message
     postMessage: function() {
