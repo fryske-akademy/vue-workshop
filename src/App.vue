@@ -1,6 +1,7 @@
 <template>
-  <div id="app">
+  <div id="app" :class="{ dark: darkTheme }">
     <h1>Kwetter</h1>
+    <label><input type='checkbox' v-model='darkTheme' /> Dark theme</label>
     <MessageInput ref='messageInput' v-model="newMessage" @post-message="postMessage($event)" :maxLength="maxLength" />
     <button @click="postMessage" :disabled="!canPostMessage">Verstuur</button>
     <MessageFeedback :value="newMessage" :maxLength="maxLength" />
@@ -40,7 +41,9 @@ export default {
       newMessage: {
         message: "",
         user: ""
-      }
+      },
+
+      darkTheme: false
     };
   },
 
@@ -80,7 +83,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -88,6 +91,12 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   max-width: 15cm;
+
+  &.dark {
+    background-color: #333;
+    color: white;
+  }
+
 }
 
 h1 {
