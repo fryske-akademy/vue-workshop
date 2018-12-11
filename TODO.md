@@ -14,5 +14,6 @@
 ## Geavanceerd
 + zorg dat #hashtags / @ mentions gekleurd worden in geposte berichten
 + zorg dat de tijdvermeldingen "1 minuut geleden", etc. real-time meeveranderen
+- zorg dat username en theme preference opgeslagen worden in localStorage
 - gebruik vue-router om zoek/filter-opdrachten elk hun eigen URL te geven.
   dus bijv. /persoon/Frieda toont alleen berichten van Frieda
