@@ -2,7 +2,9 @@
   <li :style='{ backgroundColor: userColor(message.user) }'>
     <b>{{ message.user }}</b>
     <span class='time-ago'>{{ timeAgo }}</span><br/>
-    <span v-html="messageProcessed"></span>
+    <span v-for="(part, index) in messageTokenized" :class="{ hl: part.highlight }" :key="index">
+      {{ part.messagePart }}
+    </span>
   </li>
 </template>
 
@@ -38,8 +40,16 @@ export default {
       return `${dagen} dag${ dagen > 1 ? "en" : ""} geleden`;
     },
 
-    messageProcessed: function () {
-      return this.message.message.replace(/(#\S+)/, "<span style='color: blue;'>$1</span>");
+    messageTokenized: function () {
+      return this.message.message.
+        replace(/(#\S+)/, "||$1||").
+        split(/\|\|/).
+        map( (part, index) => {
+          return {
+            messagePart: part,
+            highlight: index % 2 !== 0
+          }
+        });
     }
   },
 
@@ -59,6 +69,10 @@ li {
   border-radius: 3px;
   background-color: #fff;
   margin-bottom: 5px;
+
+  .hl {
+    color: blue;
+  }
 
 }
 
