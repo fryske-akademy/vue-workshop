@@ -2,7 +2,7 @@
   <li :style='{ backgroundColor: userColor(message.user) }'>
     <b>{{ message.user }}</b>
     <span class='time-ago'>{{ timeAgo }}</span><br/>
-    {{ message.message }}
+    <span v-html="messageProcessed"></span>
   </li>
 </template>
 
@@ -36,6 +36,10 @@ export default {
       if (dagen < 1)
         return `${Math.floor(s / 3600)} uur geleden`;
       return `${dagen} dag${ dagen > 1 ? "en" : ""} geleden`;
+    },
+
+    messageProcessed: function () {
+      return this.message.message.replace(/(#\S+)/, "<span style='color: blue;'>$1</span>");
     }
   },
 
@@ -47,7 +51,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang='scss'>
 li {
   list-style-type: none;
   padding: 10px;
@@ -55,6 +59,7 @@ li {
   border-radius: 3px;
   background-color: #fff;
   margin-bottom: 5px;
+
 }
 
 .time-ago {
