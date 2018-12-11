@@ -43,14 +43,19 @@ export default {
         user: ""
       },
 
-      darkTheme: false
+      // Do we want the dark theme?
+      darkTheme: false,
+
+      // Are we in the process of posting a message?
+      // If so, don't allow doubleposting
+      postInProgress: false
     };
   },
 
   computed: {
     // Kan het bericht geplaatst worden, of niet? (leeg, te lang of geen naam gegeven)
     canPostMessage: function () {
-      return this.newMessage.user.length > 0 && this.newMessage.message.length > 0 && this.newMessage.message.length <= this.maxLength;
+      return !this.postInProgress && this.newMessage.user.length > 0 && this.newMessage.message.length > 0 && this.newMessage.message.length <= this.maxLength;
     }
   },
 
@@ -58,7 +63,7 @@ export default {
     this.loadData();
     setInterval(function () {
       this.loadData();
-    }.bind(this), 5000); 
+    }.bind(this), 10000); 
   },
 
   // Methods die je in bijv. event handlers kunt aanroepen
@@ -73,12 +78,16 @@ export default {
 
     // Post new message
     postMessage: function() {
+      if (!this.canPostMessage)
+        return;
       let params = new URLSearchParams();
       params.append('message', this.newMessage.message );
       params.append('user', this.newMessage.user );
       params.append('time', (new Date()).getTime() );
+      this.postInProgress = true;
       Vue.axios.post(BACKEND_URL, params).then((response) => {
         this.messages = response.data;
+        this.postInProgress = false;
       });
       this.newMessage.message = '';
       this.$refs.messageInput.focus();

@@ -6,8 +6,8 @@
    hint: toggle een css class op de body die andere css-regels activeert)
 + geef iedere user's messages een eigen kleur op basis van username
   (hint: gebruik md5-hash modulo de lengte van een kleuren-array o.i.d.)
-- ververs elke 10s de berichten van de server
-- voorkom double-posts als je 2x snel op Verstuur klikt
++ ververs elke 5s de berichten van de server
++ voorkom double-posts als je 2x snel op Verstuur klikt
 - "zoek in berichttekst" functionaliteit
 - "toon berichten van 1 auteur" functie (via selectielijst o.i.d.)
 
