@@ -14,17 +14,19 @@ export default {
 
   props: {
     message: Object,
-    index: Number
+    index: Number,
+    now: Number
   },
 
   // Dynamisch berekende props
   computed: {
     timeAgo: function () {
-      let s = Math.floor( ((new Date()).getTime() - this.message.time) / 1000 );
-      if (s < 20)
-        return `zojuist`;
+      let s = Math.floor( (this.now - this.message.time) / 1000 );
+      //if (s < 20)
+      //  return `zojuist`;
       if (s < 60)
-        return `minder dan een minuut geleden`;
+        return `${s}s geleden`;
+        //return `minder dan een minuut geleden`;
       if (s < 3600)
         if (s < 120)
           return `1 minuut geleden`;

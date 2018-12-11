@@ -6,7 +6,7 @@
     <button @click="postMessage" :disabled="!canPostMessage">Verstuur</button>
     <MessageFeedback :value="newMessage" :maxLength="maxLength" />
     <label>Zoek: <input v-model="zoek" /></label>
-    <MessageList :messages="messagesToShow" />
+    <MessageList :messages="messagesToShow" :now="now" />
   </div>
 </template>
 
@@ -52,7 +52,10 @@ export default {
       postInProgress: false,
 
       // Waar willen we op zoeken?
-      zoek: ""
+      zoek: "",
+
+      // De huidige tijd
+      now: (new Date()).getTime()
     };
   },
 
@@ -74,6 +77,11 @@ export default {
     setInterval(function () {
       this.loadData();
     }.bind(this), 10000); 
+
+    setInterval(function () {
+      this.now = (new Date()).getTime();
+    }.bind(this), 1000); 
+
   },
 
   // Methods die je in bijv. event handlers kunt aanroepen

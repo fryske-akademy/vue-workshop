@@ -1,6 +1,6 @@
 <template>
   <ul>
-    <Message v-for="(message, index) in messages.slice().reverse()" :message="message" :index="index" :key="index" />
+    <Message :now="now" v-for="(message, index) in messages.slice().reverse()" :message="message" :index="index" :key="index" />
   </ul>
 </template>
 
@@ -14,7 +14,8 @@ export default {
   },
 
   props: {
-    messages: Array
+    messages: Array,
+    now: Number
   }
 
 }
