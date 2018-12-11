@@ -129,6 +129,10 @@ body {
   &.dark {
     background-color: #333;
     color: white;
+
+    li {
+      color: black;
+    }
   }
 
   color: #2c3e50;
