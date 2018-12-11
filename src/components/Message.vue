@@ -27,7 +27,10 @@ export default {
           return `1 minuut geleden`;
         else
           return `${Math.floor(s / 60)} minuten geleden`;
-      return `${Math.floor(s / 3600)} uur geleden`;
+      let dagen = Math.floor(s / 3600 / 24);
+      if (dagen < 1)
+        return `${Math.floor(s / 3600)} uur geleden`;
+      return `${dagen} dag${ dagen > 1 ? "en" : ""} geleden`;
     }
   }
 }
