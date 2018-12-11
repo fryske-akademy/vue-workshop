@@ -27,7 +27,11 @@ export default {
           return `1 minuut geleden`;
         else
           return `${Math.floor(s / 60)} minuten geleden`;
-      return `${Math.floor(s / 3600)} uur geleden`;
+      else
+        if (s < 3600 * 24)
+          return `${Math.floor(s / 3600)} uur geleden`;
+        else
+          return `${Math.floor(s / (3600 * 24))} dagen geleden`;
     }
   }
 }

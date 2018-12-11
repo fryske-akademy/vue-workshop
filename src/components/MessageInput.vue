@@ -34,8 +34,7 @@ export default {
   // Niet wijzigen in dit component!
   props: {
     value: Object,            // nodig om dit component met v-model te laten werken
-    maxLength: Number,
-    placeholderText: String
+    maxLength: Number
   },
 
   // Methods die je bijv. kunt aanroepen in reactie op events
