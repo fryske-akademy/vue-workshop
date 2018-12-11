@@ -1,7 +1,7 @@
 # Suggesties voor verbeteringen
 
-- zorg dat er bij berichten na 1 dag "X dagen geleden" staat
-- voeg een vinkje toe dat switcht tussen light / dark theme
++ zorg dat er bij berichten na 1 dag "X dagen geleden" staat
++ voeg een vinkje toe dat switcht tussen light / dark theme
   (dus lichte achtergrond met donkere tekst vs. andersom;
    hint: toggle een css class op de body die andere css-regels activeert)
 - geef iedere user's messages een eigen kleur op basis van username

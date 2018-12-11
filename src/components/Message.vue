@@ -1,5 +1,5 @@
 <template>
-  <li>
+  <li :style='{ backgroundColor: userColor(message.user) }'>
     <b>{{ message.user }}</b>
     <span class='time-ago'>{{ timeAgo }}</span><br/>
     {{ message.message }}
@@ -7,6 +7,9 @@
 </template>
 
 <script>
+
+const COLORS = ['#ddd', '#fdd', '#dfd', '#ddf', '#ffd', '#dff', '#fdf', '#fff'];
+
 export default {
 
   props: {
@@ -31,6 +34,12 @@ export default {
       if (dagen < 1)
         return `${Math.floor(s / 3600)} uur geleden`;
       return `${dagen} dag${ dagen > 1 ? "en" : ""} geleden`;
+    }
+  },
+
+  methods: {
+    userColor: function (name) {
+      return COLORS[name.hashCode() % COLORS.length];
     }
   }
 }
