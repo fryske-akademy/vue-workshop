@@ -2,26 +2,31 @@
   <li>
     <b>{{ message.user }}</b>
     <span class='time-ago'>{{ timeAgo }}</span><br/>
-    {{ message.message }}
+    <span v-for="(part, index) in messageTokenized" :class="{ hl: part.highlight }" :key="index">
+      {{ part.messagePart }}
+    </span>
   </li>
 </template>
 
 <script>
+  
 export default {
 
   props: {
     message: Object,
-    index: Number
+    index: Number,
+    now: Number
   },
 
   // Dynamisch berekende props
   computed: {
     timeAgo: function () {
-      let s = Math.floor( ((new Date()).getTime() - this.message.time) / 1000 );
-      if (s < 20)
-        return `zojuist`;
+      let s = Math.floor( (this.now - this.message.time) / 1000 );
+      //if (s < 20)
+      //  return `zojuist`;
       if (s < 60)
-        return `minder dan een minuut geleden`;
+        return `${s}s geleden`;
+        //return `minder dan een minuut geleden`;
       if (s < 3600)
         if (s < 120)
           return `1 minuut geleden`;
@@ -37,7 +42,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang='scss'>
 li {
   list-style-type: none;
   padding: 10px;
@@ -45,6 +50,11 @@ li {
   border-radius: 3px;
   background-color: #fff;
   margin-bottom: 5px;
+
+  .hl {
+    color: blue;
+  }
+
 }
 
 .time-ago {
