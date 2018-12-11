@@ -5,7 +5,8 @@
     <MessageInput ref='messageInput' v-model="newMessage" @post-message="postMessage($event)" :maxLength="maxLength" />
     <button @click="postMessage" :disabled="!canPostMessage">Verstuur</button>
     <MessageFeedback :value="newMessage" :maxLength="maxLength" />
-    <MessageList :messages="messages" />
+    <label>Zoek: <input v-model="zoek" /></label>
+    <MessageList :messages="messagesToShow" />
   </div>
 </template>
 
@@ -48,7 +49,10 @@ export default {
 
       // Are we in the process of posting a message?
       // If so, don't allow doubleposting
-      postInProgress: false
+      postInProgress: false,
+
+      // Waar willen we op zoeken?
+      zoek: ""
     };
   },
 
@@ -56,6 +60,12 @@ export default {
     // Kan het bericht geplaatst worden, of niet? (leeg, te lang of geen naam gegeven)
     canPostMessage: function () {
       return !this.postInProgress && this.newMessage.user.length > 0 && this.newMessage.message.length > 0 && this.newMessage.message.length <= this.maxLength;
+    },
+
+    messagesToShow: function () {
+      if (this.zoek.length === 0)
+        return this.messages;
+      return this.messages.filter(m => m.message.indexOf(this.zoek) >= 0 || m.user.indexOf(this.zoek) >= 0);
     }
   },
 
