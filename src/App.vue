@@ -1,5 +1,5 @@
 <template>
-  <div id="app" :class="{ dark: darkTheme }">
+  <div id="app">
     <h1>Kwetter</h1>
     <label><input type='checkbox' v-model='darkTheme' /> Dark theme</label>
     <MessageInput ref='messageInput' v-model="newMessage" @post-message="postMessage($event)" :maxLength="maxLength" />
@@ -57,6 +57,12 @@ export default {
       // De huidige tijd
       now: (new Date()).getTime()
     };
+  },
+
+  watch: {
+    darkTheme: function () {
+      document.querySelector("body").classList.toggle("dark", this.darkTheme);
+    }
   },
 
   computed: {
@@ -118,17 +124,26 @@ export default {
 
 <style lang="scss">
 
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  max-width: 15cm;
+body {
 
   &.dark {
     background-color: #333;
     color: white;
   }
+
+  color: #2c3e50;
+
+}
+
+label {
+  padding: 10px;
+}
+
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  max-width: 15cm;
 
 }
 

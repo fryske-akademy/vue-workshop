@@ -12,7 +12,7 @@
 + "toon berichten van 1 auteur" functie (via selectielijst o.i.d.)
 
 ## Geavanceerd
-- zorg dat #hashtags / @ mentions gekleurd worden in geposte berichten
++ zorg dat #hashtags / @ mentions gekleurd worden in geposte berichten
 + zorg dat de tijdvermeldingen "1 minuut geleden", etc. real-time meeveranderen
 - gebruik vue-router om zoek/filter-opdrachten elk hun eigen URL te geven.
   dus bijv. /persoon/Frieda toont alleen berichten van Frieda
