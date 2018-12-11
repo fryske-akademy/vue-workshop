@@ -4,19 +4,21 @@
   </ul>
 </template>
 
-<script>
+<script lang='ts'>
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import Message from './Message.vue';
+import MessageType from './App.vue';
 
-export default {
-
+@Component({
   components: {
-    Message
+    Message,
   },
+})
+export default class MessageList extends Vue {
 
-  props: {
-    messages: Array,
-    now: Number
-  }
+  @Prop() private messages!: MessageType[];
+
+  @Prop() private now!: number;
 
 }
 </script>

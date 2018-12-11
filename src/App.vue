@@ -10,113 +10,107 @@
   </div>
 </template>
 
-<script>
-
-import Vue from 'vue';
+<script lang="ts">
+import { Component, Watch, Vue } from 'vue-property-decorator';
 import MessageInput from './components/MessageInput.vue';
 import MessageFeedback from './components/MessageFeedback.vue';
 import MessageList from './components/MessageList.vue';
 
-const BACKEND_URL = "https://gwtp.net/jn/kwetter.php";
+const BACKEND_URL = 'https://gwtp.net/jn/kwetter.php';
 
-export default {
+interface MessageType {
+  message: string;
+  user: string;
+  time: number;
+}
 
-  // Components die we gebruiken
+@Component({
   components: {
     MessageInput,
     MessageFeedback,
-    MessageList
+    MessageList,
   },
+})
+export default class App extends Vue {
 
-  // Top-level app state
-  data: function() {
-    return {
+  public $refs!: {
+    messageInput: InstanceType<typeof MessageInput>,
+  };
 
-      // Maximale lengte van een bericht
-      maxLength: 40,
+  private newMessage = {
+    message: 'test',
+    user: 'ik',
+  };
 
-      // Berichten tot nu toe
-      messages: [],
+  private now = (new Date()).getTime();
 
-      // Het nieuwe bericht dat bewerkt wordt
-      newMessage: {
-        message: "",
-        user: ""
-      },
+  // Maximale lengte van een bericht
+  private maxLength = 40;
 
-      // Do we want the dark theme?
-      darkTheme: false,
+  // Berichten tot nu toe
+  private messages: MessageType[] = [];
 
-      // Are we in the process of posting a message?
-      // If so, don't allow doubleposting
-      postInProgress: false,
+  // Do we want the dark theme?
+  private darkTheme = false;
 
-      // Waar willen we op zoeken?
-      zoek: "",
+  // Are we in the process of posting a message?
+  // If so, don't allow doubleposting
+  private postInProgress = false;
 
-      // De huidige tijd
-      now: (new Date()).getTime()
-    };
-  },
+  // Waar willen we op zoeken?
+  private zoek = '';
 
-  watch: {
-    darkTheme: function () {
-      document.querySelector("body").classList.toggle("dark", this.darkTheme);
-    }
-  },
+  // Kan het bericht geplaatst worden, of niet? (leeg, te lang of geen naam gegeven)
+  get canPostMessage() {
+    return !this.postInProgress && this.newMessage.user.length > 0 &&
+      this.newMessage.message.length > 0 && this.newMessage.message.length <= this.maxLength;
+  }
 
-  computed: {
-    // Kan het bericht geplaatst worden, of niet? (leeg, te lang of geen naam gegeven)
-    canPostMessage: function () {
-      return !this.postInProgress && this.newMessage.user.length > 0 && this.newMessage.message.length > 0 && this.newMessage.message.length <= this.maxLength;
-    },
+  get messagesToShow() {
+    if (this.zoek.length === 0)
+      return this.messages;
+    return this.messages.filter((m) => m.message.indexOf(this.zoek) >= 0 || m.user.indexOf(this.zoek) >= 0);
+  }
 
-    messagesToShow: function () {
-      if (this.zoek.length === 0)
-        return this.messages;
-      return this.messages.filter(m => m.message.indexOf(this.zoek) >= 0 || m.user.indexOf(this.zoek) >= 0);
-    }
-  },
+  @Watch('darkTheme')
+  private onDarkThemeChanged() {
+    document.querySelector('body')!.classList.toggle('dark', this.darkTheme);
+  }
 
-  mounted: function () {
+  private mounted() {
     this.loadData();
-    setInterval(function () {
+    setInterval(() => {
       this.loadData();
-    }.bind(this), 10000); 
+    }, 10000);
 
-    setInterval(function () {
+    setInterval(() => {
       this.now = (new Date()).getTime();
-    }.bind(this), 1000); 
+    }, 1000);
+  }
 
-  },
+  private loadData() {
+    // Get messages from backend
+    Vue.axios.get(BACKEND_URL).then((response: { data: MessageType[] }) => {
+      this.messages = response.data;
+    });
+  }
 
-  // Methods die je in bijv. event handlers kunt aanroepen
-  methods: {
-
-    loadData: function () {
-      // Get messages from backend
-      Vue.axios.get(BACKEND_URL).then((response) => {
-        this.messages = response.data;
-      });
-    },
-
-    // Post new message
-    postMessage: function() {
-      if (!this.canPostMessage)
-        return;
-      let params = new URLSearchParams();
-      params.append('message', this.newMessage.message );
-      params.append('user', this.newMessage.user );
-      params.append('time', (new Date()).getTime() );
-      this.postInProgress = true;
-      Vue.axios.post(BACKEND_URL, params).then((response) => {
+  // Post new message
+  private postMessage() {
+    if (!this.canPostMessage)
+      return;
+    const params = new URLSearchParams();
+    params.append('message', this.newMessage.message );
+    params.append('user', this.newMessage.user );
+    params.append('time', (new Date()).getTime().toString() );
+    this.postInProgress = true;
+    Vue.axios.post(BACKEND_URL, params).
+      then((response: any) => {
         this.messages = response.data;
         this.postInProgress = false;
       });
-      this.newMessage.message = '';
-      this.$refs.messageInput.focus();
-    }
-
+    this.newMessage.message = '';
+    this.$refs.messageInput.focus();
   }
 
 }
