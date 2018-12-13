@@ -1,9 +1,7 @@
 <template>
-  <div id="app" v-bind:style="{backgroundColor: bg, color: fg}">
+  <div id="app">
     <h1>Kwetter</h1>
-    <div class="theme">
-      <label for="theme" >dark?</label><input id="theme" type="checkbox" @click="toggleTheme"/>
-    </div>
+    <label><input type='checkbox' v-model='darkTheme' /> Dark theme</label>
     <MessageInput ref='messageInput' v-model="newMessage" @post-message="postMessage($event)" :maxLength="maxLength" />
     <button @click="postMessage" :disabled="!canPostMessage">Verstuur</button>
     <MessageFeedback :value="newMessage" :maxLength="maxLength" />
@@ -12,141 +10,107 @@
   </div>
 </template>
 
-<script>
-
-import Vue from 'vue';
+<script lang="ts">
+import { Component, Watch, Vue } from 'vue-property-decorator';
 import MessageInput from './components/MessageInput.vue';
 import MessageFeedback from './components/MessageFeedback.vue';
 import MessageList from './components/MessageList.vue';
-import invert from 'invert-color';
-import VueTimers from 'vue-timers/mixin'
 
-const BACKEND_URL = "https://gwtp.net/jn/kwetter.php";
+const BACKEND_URL = 'https://gwtp.net/jn/kwetter.php';
 
-export default {
-  mixins: [VueTimers],
+interface MessageType {
+  message: string;
+  user: string;
+  time: number;
+}
 
-  // Components die we gebruiken
+@Component({
   components: {
     MessageInput,
     MessageFeedback,
-    MessageList
+    MessageList,
   },
+})
+export default class App extends Vue {
 
-  // timers
-  timers: {
-    laden: {time: 10000, autostart: true, repeat: true}
-  },
+  public $refs!: {
+    messageInput: InstanceType<typeof MessageInput>,
+  };
 
-  // Top-level app state
-  data: function() {
-    return {
+  private newMessage = {
+    message: 'test',
+    user: 'ik',
+  };
 
-      // Maximale lengte van een bericht
-      maxLength: 40,
+  private now = (new Date()).getTime();
 
-      // Berichten tot nu toe
-      messages: [],
+  // Maximale lengte van een bericht
+  private maxLength = 40;
 
-      // Dark
-      dark: "#333333",
-      // Light
-      light: "#eeeeee",
-      // current bg color
-      bg: this.light,
-      // current fg color
-      fg: this.dark,
-      // no double post
-      posting: false,
+  // Berichten tot nu toe
+  private messages: MessageType[] = [];
 
-      // Het nieuwe bericht dat bewerkt wordt
-      newMessage: {
-        message: "",
-        user: ""
-      },
+  // Do we want the dark theme?
+  private darkTheme = false;
 
-      // Do we want the dark theme?
-      darkTheme: false,
+  // Are we in the process of posting a message?
+  // If so, don't allow doubleposting
+  private postInProgress = false;
 
-      // Are we in the process of posting a message?
-      // If so, don't allow doubleposting
-      postInProgress: false,
+  // Waar willen we op zoeken?
+  private zoek = '';
 
-      // Waar willen we op zoeken?
-      zoek: "",
+  // Kan het bericht geplaatst worden, of niet? (leeg, te lang of geen naam gegeven)
+  get canPostMessage() {
+    return !this.postInProgress && this.newMessage.user.length > 0 &&
+      this.newMessage.message.length > 0 && this.newMessage.message.length <= this.maxLength;
+  }
 
-      // De huidige tijd
-      now: (new Date()).getTime()
-    };
-  },
+  get messagesToShow() {
+    if (this.zoek.length === 0)
+      return this.messages;
+    return this.messages.filter((m) => m.message.indexOf(this.zoek) >= 0 || m.user.indexOf(this.zoek) >= 0);
+  }
 
-  watch: {
-    darkTheme: function () {
-      document.querySelector("body").classList.toggle("dark", this.darkTheme);
-    }
-  },
+  @Watch('darkTheme')
+  private onDarkThemeChanged() {
+    document.querySelector('body')!.classList.toggle('dark', this.darkTheme);
+  }
 
-  computed: {
-    // Kan het bericht geplaatst worden, of niet? (leeg, te lang of geen naam gegeven)
-    canPostMessage: function () {
-      return !this.postInProgress && this.newMessage.user.length > 0 && this.newMessage.message.length > 0 && this.newMessage.message.length <= this.maxLength;
-    },
+  private mounted() {
+    this.loadData();
+    setInterval(() => {
+      this.loadData();
+    }, 10000);
 
-    messagesToShow: function () {
-      if (this.zoek.length === 0)
-        return this.messages;
-      return this.messages.filter(m => m.message.indexOf(this.zoek) >= 0 || m.user.indexOf(this.zoek) >= 0);
-    }
-  },
+    setInterval(() => {
+      this.now = (new Date()).getTime();
+    }, 1000);
+  }
 
-  mounted: function () {
+  private loadData() {
     // Get messages from backend
-    this.get();
-  },
+    Vue.axios.get(BACKEND_URL).then((response: { data: MessageType[] }) => {
+      this.messages = response.data;
+    });
+  }
 
-  // Methods die je in bijv. event handlers kunt aanroepen
-  methods: {
-
-    loadData: function () {
-      // Get messages from backend
-      Vue.axios.get(BACKEND_URL).then((response) => {
+  // Post new message
+  private postMessage() {
+    if (!this.canPostMessage)
+      return;
+    const params = new URLSearchParams();
+    params.append('message', this.newMessage.message );
+    params.append('user', this.newMessage.user );
+    params.append('time', (new Date()).getTime().toString() );
+    this.postInProgress = true;
+    Vue.axios.post(BACKEND_URL, params).
+      then((response: any) => {
         this.messages = response.data;
+        this.postInProgress = false;
       });
-    },
-
-    // Post new message
-    postMessage: function() {
-      if (this.posting===true) {
-        return;
-      }
-      this.posting===true;
-      let params = new URLSearchParams();
-      params.append('message', this.newMessage.message );
-      params.append('user', this.newMessage.user );
-      params.append('time', (new Date()).getTime() );
-      this.postInProgress = true;
-      Vue.axios.post(BACKEND_URL, params).then((response) => {
-        this.messages = response.data;
-      }).finally(() => {this.posting=false;});
-      this.newMessage.message = '';
-      this.$refs.messageInput.focus();
-    },
-
-    toggleTheme: function() {
-      this.bg = this.bg == this.dark ? this.light: this.dark;
-      this.fg = invert(this.bg)
-    },
-    get: function() {
-      Vue.axios.get(BACKEND_URL).then((response) => {
-        this.messages = response.data;
-      });
-    },
-    laden: function() {
-      this.get();
-    }
-
-
-
+    this.newMessage.message = '';
+    this.$refs.messageInput.focus();
   }
 
 }
@@ -178,7 +142,7 @@ label {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   max-width: 15cm;
-  margin: auto;
+
 }
 
 h1 {
@@ -189,6 +153,5 @@ h1 {
 button {
   margin-left: 10px;
 }
-  div.theme {float: right; margin-top: -30px}
 
 </style>

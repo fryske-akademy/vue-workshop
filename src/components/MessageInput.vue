@@ -27,34 +27,38 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang='ts'>
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-  // Waardes die dit component ontvangt van de parent.
-  // Niet wijzigen in dit component!
-  props: {
-    value: Object,            // nodig om dit component met v-model te laten werken
-    maxLength: Number
-  },
+@Component
+export default class MessageInput extends Vue {
 
-  // Methods die je bijv. kunt aanroepen in reactie op events
-  methods: {
+  public $refs!: {
+    fieldUserName: HTMLFormElement,
+    myTextArea: HTMLFormElement,
+  };
 
-    // Wordt aangeroepen als de waarde van user of message verandert
-    // Genereert een input event zodat dit component met v-model werkt
-    valueChanged: function () {
-      this.$emit('input', {
-        user: this.$refs.fieldUserName.value,
-        message: this.$refs.myTextArea.value
-      });
-    },
+  @Prop() private value!: {
+    message: string,
+    user: string,
+  };
 
-    // Zet de focus op het berichtenveld
-    focus: function () {
-      this.$refs.myTextArea.focus();
-    }
+  @Prop() private maxLength!: number;
 
+  // Zet de focus op het berichtenveld
+  public focus() {
+    this.$refs.myTextArea.focus();
   }
+
+  // Wordt aangeroepen als de waarde van user of message verandert
+  // Genereert een input event zodat dit component met v-model werkt
+  private valueChanged() {
+    this.$emit('input', {
+      user: this.$refs.fieldUserName.value,
+      message: this.$refs.myTextArea.value,
+    });
+  }
+
 }
 </script>
 

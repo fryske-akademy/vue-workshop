@@ -4,33 +4,34 @@
   </p>
 </template>
 
-<script>
-export default {
+<script lang='ts'>
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-  props: {
-    value: Object,
-    maxLength: Number
-  },
+@Component
+export default class MessageFeedback extends Vue {
 
-  computed: {
+  @Prop() private value!: {
+    message: string,
+    user: string,
+  };
 
-    // Feedback op de lengte van je bericht (tekens over / te lang)
-    messageLengthComment: function () {
-      if (this.value.message.length <= this.maxLength)
-        return `nog ${this.maxLength - this.value.message.length} tekens over`;
-      if (this.value.message.length < this.maxLength * 1.5)
-        return `${this.value.message.length - this.maxLength} tekens teveel`;
-      return `Hee, rustig aan, Dostoevsky!`;
-    },
+  @Prop() private maxLength!: number;
 
-    // Tel aantal woorden in bericht
-    numberOfWords: function () {
-      let m = this.value.message.trim();
-      if (m.length === 0)
-        return 0;
-      return m.split(/\s+/).length;
-    }
+  // Feedback op de lengte van je bericht (tekens over / te lang)
+  get messageLengthComment() {
+    if (this.value.message.length <= this.maxLength)
+      return `nog ${this.maxLength - this.value.message.length} tekens over`;
+    if (this.value.message.length < this.maxLength * 1.5)
+      return `${this.value.message.length - this.maxLength} tekens teveel`;
+    return `Hee, rustig aan, Dostoevsky!`;
+  }
 
+  // Tel aantal woorden in bericht
+  get numberOfWords() {
+    const m = this.value.message.trim();
+    if (m.length === 0)
+      return 0;
+    return m.split(/\s+/).length;
   }
 
 }
